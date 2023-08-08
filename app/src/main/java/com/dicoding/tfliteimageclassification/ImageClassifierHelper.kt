@@ -15,9 +15,10 @@ import org.tensorflow.lite.task.vision.classifier.ImageClassifier
 
 class ImageClassifierHelper(
     var threshold: Float = 0.1f,
-    var numThreads: Int = 2,
     var maxResults: Int = 3,
+    var numThreads: Int = 2,
     var currentDelegate: Int = 0,
+    val modelName: String = "mobilenet_v1_1.0_224_quantized_1_metadata_1.tflite",
     val context: Context,
     val imageClassifierListener: ClassifierListener?
 ) {
@@ -58,8 +59,6 @@ class ImageClassifierHelper(
         }
 
         optionsBuilder.setBaseOptions(baseOptionsBuilder.build())
-
-        val modelName = "mobilenet_v1_1.0_224_quantized_1_metadata_1.tflite"
 
         try {
             imageClassifier =
