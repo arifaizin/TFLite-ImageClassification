@@ -50,7 +50,9 @@ class MainActivity : AppCompatActivity() {
                 context = this,
                 imageClassifierListener = object : ImageClassifierHelper.ClassifierListener {
                     override fun onError(error: String) {
-                        Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
+                        runOnUiThread {
+                            Toast.makeText(this@MainActivity, error, Toast.LENGTH_SHORT).show()
+                        }
                     }
 
                     override fun onResults(results: List<Classifications>?, inferenceTime: Long) {
