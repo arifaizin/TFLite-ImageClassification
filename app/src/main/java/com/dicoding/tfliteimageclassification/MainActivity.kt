@@ -26,11 +26,7 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { isGranted: Boolean ->
-            val message = if (isGranted) {
-                "Camera permission granted"
-            } else {
-                "Camera permission rejected"
-            }
+            val message = if (isGranted) "Camera permission granted" else "Camera permission rejected"
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
 
