@@ -2,8 +2,6 @@ package com.dicoding.tfliteimageclassification
 
 import android.Manifest
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.view.Display
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +12,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.dicoding.tfliteimageclassification.databinding.ActivityMainBinding
-import org.tensorflow.lite.task.vision.classifier.Classifications
+import com.google.mediapipe.tasks.vision.imageclassifier.ImageClassifierResult
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -52,16 +50,16 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    override fun onResults(results: List<Classifications>?, inferenceTime: Long) {
+                    override fun onResults(results: ImageClassifierResult?, inferenceTime: Long) {
                         runOnUiThread {
-                            results?.let { it ->
-                                if (it.isNotEmpty() && it[0].categories.isNotEmpty()) {
+                            results?.classificationResult()?.classifications()?.let { it ->
+                                if (it.isNotEmpty() && it[0].categories().isNotEmpty()) {
                                     println(it)
                                     val sortedCategories =
-                                        it[0].categories.sortedByDescending { it?.score }
+                                        it[0].categories().sortedByDescending { it?.score() }
                                     val displayResult =
                                         sortedCategories.joinToString("\n") {
-                                            "${it.label} " + String.format("%.2f", it.score).trim()
+                                            "${it.categoryName()} " + String.format("%.2f", it.score()).trim()
                                         }
                                     binding.tvResult.text = displayResult
                                 }
@@ -92,7 +90,7 @@ class MainActivity : AppCompatActivity() {
                     .also {
                         it.setAnalyzer(Executors.newSingleThreadExecutor()) { image ->
                             // Pass Bitmap and rotation to the image classifier helper for processing and classification
-                            imageClassifierHelper.classify(image, getScreenOrientation())
+                            imageClassifierHelper.classify(image)
                         }
                     }
             try {
@@ -107,23 +105,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Gagal memunculkan kamera.", Toast.LENGTH_SHORT).show()
             }
         }, ContextCompat.getMainExecutor(this))
-    }
-
-    private fun getScreenOrientation(): Int {
-        val outMetrics = DisplayMetrics()
-
-        val display: Display?
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            display = this.display
-            display?.getRealMetrics(outMetrics)
-        } else {
-            @Suppress("DEPRECATION")
-            display = this.windowManager.defaultDisplay
-            @Suppress("DEPRECATION")
-            display.getMetrics(outMetrics)
-        }
-
-        return display?.rotation ?: 0
     }
 
 }
