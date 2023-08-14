@@ -1,7 +1,6 @@
 package com.dicoding.tfliteimageclassification
 
 import android.Manifest
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.Display
@@ -40,8 +39,6 @@ class MainActivity : AppCompatActivity() {
         startCamera()
 
     }
-
-    private lateinit var bitmapBuffer: Bitmap
 
     private fun startCamera() {
 
@@ -94,20 +91,8 @@ class MainActivity : AppCompatActivity() {
                     // The analyzer can then be assigned to the instance
                     .also {
                         it.setAnalyzer(Executors.newSingleThreadExecutor()) { image ->
-                            if (!::bitmapBuffer.isInitialized) {
-                                // The image rotation and RGB image buffer are initialized only once
-                                // the analyzer has started running
-                                bitmapBuffer = Bitmap.createBitmap(
-                                    image.width,
-                                    image.height,
-                                    Bitmap.Config.ARGB_8888
-                                )
-                            }
-
-                            image.use { bitmapBuffer.copyPixelsFromBuffer(image.planes[0].buffer) }
-
                             // Pass Bitmap and rotation to the image classifier helper for processing and classification
-                            imageClassifierHelper.classify(bitmapBuffer, getScreenOrientation())
+                            imageClassifierHelper.classify(image, getScreenOrientation())
                         }
                     }
             try {

@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.os.SystemClock
 import android.util.Log
 import android.view.Surface
+import androidx.camera.core.ImageProxy
 import org.tensorflow.lite.gpu.CompatibilityList
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -71,10 +72,19 @@ class ImageClassifierHelper(
         }
     }
 
-    fun classify(image: Bitmap, rotation: Int) {
+    fun classify(image: ImageProxy, rotation: Int) {
         if (imageClassifier == null) {
             setupImageClassifier()
         }
+
+        val bitmapBuffer = Bitmap.createBitmap(
+            image.width,
+            image.height,
+            Bitmap.Config.ARGB_8888
+        )
+
+        image.use { bitmapBuffer.copyPixelsFromBuffer(image.planes[0].buffer) }
+        image.close()
 
         // Inference time is the difference between the system time at the start and finish of the
         // process
@@ -86,7 +96,7 @@ class ImageClassifierHelper(
         val imageProcessor = ImageProcessor.Builder().build()
 
         // Preprocess the image and convert it into a TensorImage for classification.
-        val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
+        val tensorImage = imageProcessor.process(TensorImage.fromBitmap(bitmapBuffer))
 
         val imageProcessingOptions = ImageProcessingOptions.builder()
             .setOrientation(getOrientationFromRotation(rotation))
