@@ -39,7 +39,7 @@ class ImageClassifierHelper(
         return imageClassifier == null
     }
 
-    private fun setupImageClassifier() {
+    fun setupImageClassifier() {
         val optionsBuilder = ImageClassifier.ImageClassifierOptions.builder()
             .setScoreThreshold(threshold)
             .setMaxResults(maxResults)
@@ -77,7 +77,7 @@ class ImageClassifierHelper(
         }
     }
 
-    fun classify(image: ImageProxy, rotation: Int) {
+    fun classify(image: ImageProxy) {
         if (imageClassifier == null) {
             setupImageClassifier()
         }
@@ -104,7 +104,7 @@ class ImageClassifierHelper(
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(bitmapBuffer))
 
         val imageProcessingOptions = ImageProcessingOptions.builder()
-            .setOrientation(getOrientationFromRotation(rotation))
+            .setOrientation(getOrientationFromRotation(image.imageInfo.rotationDegrees))
             .build()
 
         val results = imageClassifier?.classify(tensorImage, imageProcessingOptions)
@@ -118,18 +118,11 @@ class ImageClassifierHelper(
     // Receive the device rotation (Surface.x values range from 0->3) and return EXIF orientation
     // http://jpegclub.org/exif_orientation.html
     private fun getOrientationFromRotation(rotation: Int): ImageProcessingOptions.Orientation {
-        when (rotation) {
-            Surface.ROTATION_270 ->
-                return ImageProcessingOptions.Orientation.BOTTOM_RIGHT
-
-            Surface.ROTATION_180 ->
-                return ImageProcessingOptions.Orientation.RIGHT_BOTTOM
-
-            Surface.ROTATION_90 ->
-                return ImageProcessingOptions.Orientation.TOP_LEFT
-
-            else ->
-                return ImageProcessingOptions.Orientation.RIGHT_TOP
+        return when (rotation) {
+            Surface.ROTATION_270 -> ImageProcessingOptions.Orientation.BOTTOM_RIGHT
+            Surface.ROTATION_180 -> ImageProcessingOptions.Orientation.RIGHT_BOTTOM
+            Surface.ROTATION_90 -> ImageProcessingOptions.Orientation.TOP_LEFT
+            else -> ImageProcessingOptions.Orientation.RIGHT_TOP
         }
     }
 

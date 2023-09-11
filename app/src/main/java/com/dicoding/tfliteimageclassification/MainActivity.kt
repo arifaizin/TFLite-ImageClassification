@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                     .also {
                         it.setAnalyzer(Executors.newSingleThreadExecutor()) { image ->
                             // Pass Bitmap and rotation to the image classifier helper for processing and classification
-                            imageClassifierHelper.classify(image, getScreenOrientation())
+                            imageClassifierHelper.classify(image)
                         }
                     }
             try {
@@ -120,23 +120,6 @@ class MainActivity : AppCompatActivity() {
         if (imageClassifierHelper.isClosed()) {
             imageClassifierHelper.setupImageClassifier()
         }
-    }
-
-    private fun getScreenOrientation(): Int {
-        val outMetrics = DisplayMetrics()
-
-        val display: Display?
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            display = this.display
-            display?.getRealMetrics(outMetrics)
-        } else {
-            @Suppress("DEPRECATION")
-            display = this.windowManager.defaultDisplay
-            @Suppress("DEPRECATION")
-            display.getMetrics(outMetrics)
-        }
-
-        return display?.rotation ?: 0
     }
 
 }
