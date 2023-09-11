@@ -31,7 +31,12 @@ class ImageClassifierHelper(
 
     fun clearImageClassifier() {
         //use if you change the threshold, maxResult, threads, or delegates.
+        imageClassifier?.close()
         imageClassifier = null
+    }
+
+    fun isClosed(): Boolean {
+        return imageClassifier == null
     }
 
     private fun setupImageClassifier() {
