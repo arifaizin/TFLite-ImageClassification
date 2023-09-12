@@ -15,6 +15,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.dicoding.tfliteimageclassification.databinding.ActivityMainBinding
 import org.tensorflow.lite.task.vision.classifier.Classifications
+import java.text.NumberFormat
+import java.util.Locale
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -62,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                                         it[0].categories.sortedByDescending { it?.score }
                                     val displayResult =
                                         sortedCategories.joinToString("\n") {
-                                            "${it.label} " + String.format("%.2f", it.score).trim()
+                                            "${it.label} " + NumberFormat.getPercentInstance().format(it.score).trim()
                                         }
                                     binding.tvResult.text = displayResult
                                 }
@@ -110,16 +112,16 @@ class MainActivity : AppCompatActivity() {
         }, ContextCompat.getMainExecutor(this))
     }
 
-    override fun onPause() {
-        super.onPause()
-        imageClassifierHelper.clearImageClassifier()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (imageClassifierHelper.isClosed()) {
-            imageClassifierHelper.setupImageClassifier()
-        }
-    }
+//    override fun onPause() {
+//        super.onPause()
+//        imageClassifierHelper.clearImageClassifier()
+//    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//        if (imageClassifierHelper.isClosed()) {
+//            imageClassifierHelper.setupImageClassifier()
+//        }
+//    }
 
 }
