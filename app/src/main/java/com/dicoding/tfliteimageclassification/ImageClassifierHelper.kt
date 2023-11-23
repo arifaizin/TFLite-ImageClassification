@@ -19,7 +19,7 @@ class ImageClassifierHelper(
     var threshold: Float = 0.1f,
     var maxResults: Int = 3,
     var numThreads: Int = 4,
-    var currentDelegate: Int = 2,
+    var currentDelegate: Int = DELEGATE_GPU,
     val modelName: String = "mobilenet_v1_1.0_224_quantized_1_metadata_1.tflite",
     val context: Context,
     val imageClassifierListener: ClassifierListener?
